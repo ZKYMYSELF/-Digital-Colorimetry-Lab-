@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>数码比色分析仪</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">DIGITAL COLORIMETRY</p>
+          <h1>数码比色分析仪</h1>
+          <p class="subtitle">以空白管校正 RGB，计算类吸光度并建立标准曲线</p>
+        </div>
+        <div class="top-actions">
+          <button id="newProjectBtn" class="button ghost" type="button">新建项目</button>
+          <button id="exportCsvBtn" class="button primary" type="button" disabled>导出 CSV</button>
+        </div>
+      </header>
+
+      <main>
+        <section class="workflow" aria-label="操作步骤">
+          <div class="step active" data-step="1"><span>1</span><div><b>导入图片</b><small>选择实验照片</small></div></div>
+          <div class="step" data-step="2"><span>2</span><div><b>设置比色管</b><small>编号与样本信息</small></div></div>
+          <div class="step" data-step="3"><span>3</span><div><b>框选取色</b><small>自动计算颜色</small></div></div>
+          <div class="step" data-step="4"><span>4</span><div><b>分析导出</b><small>拟合、图表与 CSV</small></div></div>
+        </section>
+
+        <section id="setupCard" class="card setup-card">
+          <div class="card-heading">
+            <div><p class="section-kicker">项目设置</p><h2>开始一次比色分析</h2></div>
+            <p class="hint">图片只在本机浏览器中处理，不会上传。</p>
+          </div>
+          <div class="setup-grid">
+            <label class="upload-zone" id="uploadZone">
+              <input id="imageInput" type="file" accept="image/*" hidden />
+              <span class="upload-icon">＋</span>
+              <strong id="uploadTitle">点击或拖入实验图片</strong>
+              <small id="uploadMeta">支持 JPG、PNG、WebP</small>
+            </label>
+            <div class="setup-fields">
+              <label>项目名称<input id="projectName" type="text" value="数码比色实验" /></label>
+              <div class="field-row">
+                <label>比色管数量<input id="tubeCount" type="number" min="1" max="200" value="6" /></label>
+                <label>编号样式
+                  <select id="numberStyle">
+                    <option value="zero">0, 1, 2, 3…</option>
+                    <option value="one" selected>1, 2, 3, 4…</option>
+                    <option value="letter">A, B, C, D…</option>
+                    <option value="padded">01, 02, 03, 04…</option>
+                    <option value="tube">管1, 管2, 管3…</option>
+                    <option value="sample">S1, S2, S3…</option>
+                  </select>
+                </label>
+              </div>
+              <button id="createTubesBtn" class="button primary wide" type="button" disabled>生成比色管条目</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="workspace" class="workspace hidden">
+          <div class="card image-card">
+            <div class="card-heading compact">
+              <div><p class="section-kicker">取色画布</p><h2>在图片中拖动框选</h2></div>
+              <div class="selection-tools">
+                <span id="selectedTubeBadge" class="badge">未选择比色管</span>
+                <button id="clearSelectionBtn" class="button ghost small" type="button">清除选框</button>
+              </div>
+            </div>
+            <div class="canvas-help-row">
+              <p class="canvas-tip">单指拖动框选；触控板双指滑动平移、双指捏合缩放。画布按原始像素渲染，不压缩取色数据。</p>
+              <div class="zoom-tools" aria-label="图片缩放工具">
+                <button id="zoomOutBtn" class="button ghost small" type="button" title="缩小">−</button>
+                <button id="zoomResetBtn" class="button ghost small zoom-value" type="button" title="恢复 100%">100%</button>
+                <button id="zoomInBtn" class="button ghost small" type="button" title="放大">＋</button>
+                <button id="zoomFitBtn" class="button ghost small" type="button">适合窗口</button>
+              </div>
+            </div>
+            <div id="canvasWrap" class="canvas-wrap">
+              <div id="canvasStage" class="canvas-stage"><canvas id="imageCanvas"></canvas></div>
+              <div id="canvasEmpty" class="canvas-empty">等待图片</div>
+            </div>
+            <div id="liveReadout" class="live-readout" aria-live="polite">
+              <div><span class="swatch" id="liveSwatch"></span><b id="liveRgb">RGB —</b></div>
+              <span id="liveSaturation">饱和度 —</span>
+              <span id="selectionSize">选区 —</span>
+            </div>
+          </div>
+
+          <aside class="card tubes-card">
+            <div class="card-heading compact">
+              <div><p class="section-kicker">样本条目</p><h2>比色管信息</h2></div>
+              <span id="progressBadge" class="badge neutral">0 / 0 已取色</span>
+            </div>
+            <div class="table-scroll">
+              <table class="tube-table">
+                <thead><tr><th>编号/类型</th><th>浓度/稀释</th><th>备注</th><th>RGB、类吸光度与浓度</th></tr></thead>
+                <tbody id="tubeTableBody"></tbody>
+              </table>
+            </div>
+          </aside>
+        </section>
+
+        <section id="analysisSection" class="card analysis-card hidden">
+          <div class="card-heading">
+            <div><p class="section-kicker">结果分析</p><h2>空白校正类吸光度标准曲线</h2></div>
+            <div class="top-actions">
+              <button id="refreshAnalysisBtn" class="button ghost" type="button">重新计算</button>
+              <button id="exportChartBtn" class="button secondary" type="button">导出图表 PNG</button>
+            </div>
+          </div>
+          <div id="analysisNotice" class="notice">请先指定一个空白管并完成取色，再使用至少 2 个标准管拟合。</div>
+          <div class="analysis-layout">
+            <div class="chart-panel"><canvas id="chartCanvas"></canvas></div>
+            <div id="equationList" class="equation-list"></div>
+          </div>
+        </section>
+      </main>
+
+      <footer>本地计算 · 原始像素 RGB · 空白校正类吸光度</footer>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
+
