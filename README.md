@@ -197,4 +197,3 @@ Then open `http://localhost:8000/`.
 原生 HTML、CSS 和 JavaScript，无框架、无后端、无第三方运行时依赖。
 
 Vanilla HTML, CSS, and JavaScript. No framework, backend, build process, or third-party runtime dependency.
-

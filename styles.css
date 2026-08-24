@@ -112,4 +112,3 @@ footer { padding: 10px 0; color: #8c9794; font-size: 11px; text-align: center; }
 
 @media (max-width: 1050px) { .workspace { grid-template-columns: 1fr; }.table-scroll { max-height: 430px; }.analysis-layout { grid-template-columns: 1fr; }.equation-list { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 720px) { .app-shell { padding: 20px 14px; }.topbar { align-items: flex-start; flex-direction: column; }.workflow { grid-template-columns: repeat(2, 1fr); }.setup-grid { grid-template-columns: 1fr; }.field-row { grid-template-columns: 1fr; }.card-heading { align-items: flex-start; flex-direction: column; }.workspace { display: block; }.image-card { margin-bottom: 18px; }.analysis-layout, .equation-list { grid-template-columns: 1fr; }.live-readout, .canvas-help-row { align-items: flex-start; flex-direction: column; }.tube-table { min-width: 720px; } }
-

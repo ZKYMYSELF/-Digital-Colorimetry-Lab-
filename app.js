@@ -641,4 +641,3 @@ imageCanvas.addEventListener("pointermove", moveSelection);
 imageCanvas.addEventListener("pointerup", endSelection);
 imageCanvas.addEventListener("pointercancel", endSelection);
 window.addEventListener("resize", () => { if (!$("#analysisSection").classList.contains("hidden")) updateAnalysis(); });
-
